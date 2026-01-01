@@ -29,8 +29,7 @@ uv init && uv venv --python 3.12  # change version as needed
 uv pip install -e .
 ```
 
-### Local Environments
-The default REPL environment runs on the host process through Python `exec` calls. It uses the same virtual environment as the host process (i.e. it will have access to the same dependencies), but with some limitations in its available global modules. As an example, we can call RLM completions using GPT-5-nano with the Portkey client:
+The default RLM object uses a REPL environment that runs on the host process through Python `exec` calls. It uses the same virtual environment as the host process (i.e. it will have access to the same dependencies), but with some limitations in its available global modules. As an example, we can call RLM completions using GPT-5-nano with the Portkey client:
 ```python
 from rlm import RLM
 
@@ -42,10 +41,27 @@ rlm = RLM(
 print(rlm.completion("Print me the first 100 powers of two, each on a newline.").response)
 ```
 
-### Isolated Environments
+## REPL Environments
+We support and distinguish between non-isolated and isolated REPL environments that the RLM uses. Non-isolated environments are simpler and run on the same machine, but are not fully safe in terms of LM-based code execution. The user can specify the choice of environment (`local` by default) as an argument, as well as initialization arguments for the environment.
 
+```python
+rlm = RLM(
+    environment="...",
+    environment_kwargs={...},
+)
 ```
-uv add modal
+
+### Local Environments
+The default `local` environment runs in the same process as the RLM itself, with specified global and local namespaces for minimal security. Using this REPL is generally safe, but should not be used for production settings. 
+
+### Isolated Environments
+We support several different REPL environments that run on separate, cloud-based machines. Whenever a recursive sub-call is made in these instances, it is requested from the host process.
+
+#### Modal Sandboxes
+To use Modal sandboxes, you need to install and authenticate your Modal account.
+```
+uv add modal  # add modal library
+modal setup   # authenticate account
 ```
 
 

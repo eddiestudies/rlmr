@@ -110,9 +110,14 @@ class LMResponse:
             chat_completions = [
                 RLMChatCompletion.from_dict(c) for c in data["chat_completions"]
             ]
+
+        chat_completion = None
+        if data.get("chat_completion"):
+            chat_completion = RLMChatCompletion.from_dict(data["chat_completion"])
+
         return cls(
             error=data.get("error"),
-            chat_completion=RLMChatCompletion.from_dict(data.get("chat_completion")),
+            chat_completion=chat_completion,
             chat_completions=chat_completions,
         )
 
